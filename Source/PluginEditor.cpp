@@ -1,0 +1,9 @@
+#include "PluginEditor.h"
+NeonKeysEditor::NeonKeysEditor(NeonKeysProcessor& p):AudioProcessorEditor(&p),processor(p) {
+ const char* ids[]={"cutoff","peak","attack","decay","sustain","release","filtereg","pitcheg","lforate","lfopitch","lfocut","pitch2","pitch3","ring","wave","mode","delaytime","feedback","delaymix","volume"};
+ const char* names[]={"CUTOFF","PEAK","ATTACK","DECAY","SUSTAIN","RELEASE","CUTOFF EG","PITCH EG","LFO RATE","LFO PITCH","LFO CUTOFF","VCO 2 PITCH","VCO 3 PITCH","RING MOD","WAVE","VOICE MODE","DELAY TIME","FEEDBACK","DELAY MIX","LEVEL"};
+ for(int i=0;i<20;++i) {auto k=std::make_unique<juce::Slider>();k->setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);k->setTextBoxStyle(juce::Slider::TextBoxBelow,false,72,18);k->setColour(juce::Slider::rotarySliderFillColourId,juce::Colours::orange);addAndMakeVisible(*k);auto l=std::make_unique<juce::Label>();l->setText(names[i],juce::dontSendNotification);l->setJustificationType(juce::Justification::centred);l->setColour(juce::Label::textColourId,juce::Colours::white);addAndMakeVisible(*l);links.push_back(std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processor.apvts,ids[i],*k));knobs.push_back(std::move(k));labels.push_back(std::move(l));}
+ setSize(860,590);
+}
+void NeonKeysEditor::paint(juce::Graphics& g) {g.fillAll(juce::Colour::fromRGB(25,26,29));g.setColour(juce::Colours::orange);g.setFont(juce::Font(30.0f));g.drawText("NEON KEYS",24,12,600,44,juce::Justification::centredLeft);g.setFont(13.0f);g.setColour(juce::Colours::lightgrey);g.drawText("THREE VCO  /  RING MOD  /  12 dB LPF  /  LFO  /  EG  /  DELAY",25,58,810,20,juce::Justification::centredLeft);}
+void NeonKeysEditor::resized(){for(int i=0;i<20;++i){int x=15+(i%5)*170,y=92+(i/5)*120;labels[i]->setBounds(x,y,160,18);knobs[i]->setBounds(x,y+18,160,95);}}
